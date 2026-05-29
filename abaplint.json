@@ -1,0 +1,46 @@
+{
+  "global": {
+    "files": "/src/**/*.*",
+    "skipGeneratedGatewayClasses": true,
+    "skipGeneratedPersistentClasses": true,
+    "skipGeneratedFunctionGroups": true
+  },
+  "dependencies": [],
+  "syntax": {
+    "version": "v750",
+    "errorNamespace": "^(Z|Y|LCL_|TY_|LIF_)",
+    "globalConstants": [],
+    "globalMacros": []
+  },
+  "rules": {
+    "parser_error": true,
+    "unknown_types": false,
+    "check_syntax": false,
+    "7bit_ascii": true,
+    "colon_missing_space": true,
+    "contains_tab": true,
+    "empty_statement": true,
+    "exit_or_check": true,
+    "identical_conditions": true,
+    "in_statement_indentation": true,
+    "keyword_case": {
+      "style": "lower",
+      "ignoreExceptions": true,
+      "ignoreLowerClassImplmentationStatement": true,
+      "ignoreGlobalClassDefinition": false,
+      "ignoreGlobalInterface": false
+    },
+    "line_length": {
+      "length": 120
+    },
+    "max_one_statement": true,
+    "sequential_blank": {
+      "lines": 3
+    },
+    "space_before_colon": true,
+    "space_before_dot": true,
+    "start_at_tab": true,
+    "tabl_enhancement_category": false,
+    "whitespace_end": true
+  }
+}

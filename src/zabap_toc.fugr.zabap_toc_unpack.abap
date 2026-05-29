@@ -1,4 +1,4 @@
-FUNCTION zabap_toc_unpack.
+function zabap_toc_unpack.
 *"----------------------------------------------------------------------
 *"*"Lokalny interfejs:
 *"  IMPORTING
@@ -8,41 +8,41 @@ FUNCTION zabap_toc_unpack.
 *"     VALUE(ERROR) TYPE  STRING
 *"     VALUE(RET_CODE) TYPE  TRRETCODE
 *"----------------------------------------------------------------------
-  TRY.
+  try.
       "Import
-      DATA system TYPE tmssysnam .
-      DATA client TYPE mandt.
-      SPLIT target_system AT '.' INTO system client.
-      IF client IS INITIAL.
+      data system type tmssysnam.
+      data client type mandt.
+      split target_system at '.' into system client.
+      if client is initial.
         client = sy-mandt.
-      ENDIF.
+      endif.
 
       "Refresh Import queue
-      DATA exception TYPE stmscalert.
-      CALL FUNCTION 'TMS_MGR_REFRESH_IMPORT_QUEUES'
-        EXPORTING
+      data exception type stmscalert.
+      call function 'TMS_MGR_REFRESH_IMPORT_QUEUES'
+        exporting
           iv_system    = system
           iv_monitor   = abap_true
           iv_verbose   = abap_true
-        IMPORTING
+        importing
           es_exception = exception
-        EXCEPTIONS
-          OTHERS       = 99.
+        exceptions
+          others       = 99.
 
-      CALL FUNCTION 'TMS_MGR_IMPORT_TR_REQUEST'
-        EXPORTING
+      call function 'TMS_MGR_IMPORT_TR_REQUEST'
+        exporting
           iv_system                  = system
           iv_request                 = toc
           iv_client                  = client
-        IMPORTING
+        importing
           ev_tp_ret_code             = ret_code
-        EXCEPTIONS
+        exceptions
           read_config_failed         = 1
           table_of_requests_is_empty = 2
-          OTHERS                     = 3.
+          others                     = 3.
 
-    CATCH cx_root INTO DATA(cx).
+    catch cx_root into data(cx).
       error = cx->get_longtext( ).
-  ENDTRY.
+  endtry.
 
-ENDFUNCTION.
+endfunction.

@@ -1,103 +1,111 @@
-CLASS zcl_zabap_toc DEFINITION
-  PUBLIC
-  FINAL
-  CREATE PUBLIC.
+class zcl_zabap_toc definition
+  public
+  final
+  create public.
 
-  PUBLIC SECTION.
-    METHODS:
-      create IMPORTING source_transport TYPE trkorr target_system TYPE tr_target RETURNING VALUE(toc) TYPE trkorr RAISING zcx_zabap_exception,
-      release IMPORTING toc TYPE trkorr RAISING zcx_zabap_exception,
-      import IMPORTING toc TYPE trkorr target_system TYPE tr_target RETURNING VALUE(ret_code) TYPE trretcode RAISING zcx_zabap_exception,
-      import_objects IMPORTING source_transport TYPE trkorr destination_transport TYPE trkorr RAISING zcx_zabap_exception,
-      check_status_in_system IMPORTING toc TYPE trkorr system TYPE tr_target EXPORTING imported TYPE abap_bool rc TYPE i RAISING zcx_zabap_exception.
+  public section.
+    methods:
+      create importing source_transport type trkorr target_system type tr_target
+                returning value(toc) type trkorr raising zcx_zabap_exception,
+      release importing toc type trkorr raising zcx_zabap_exception,
+      import importing toc type trkorr target_system type tr_target
+                returning value(ret_code) type trretcode raising zcx_zabap_exception,
+      import_objects importing source_transport type trkorr destination_transport type trkorr
+                raising zcx_zabap_exception,
+      check_status_in_system importing toc type trkorr system type tr_target
+                exporting imported type abap_bool rc type i raising zcx_zabap_exception.
 
-  PRIVATE SECTION.
-    DATA c_transport_type_toc TYPE trfunction VALUE 'T'.
+  private section.
+    data c_transport_type_toc type trfunction value 'T'.
 
-    METHODS get_toc_description IMPORTING source_transport TYPE trkorr RETURNING VALUE(description) TYPE string.
-ENDCLASS.
+    methods get_toc_description importing source_transport type trkorr returning value(description) type string.
+endclass.
 
 
-CLASS zcl_zabap_toc IMPLEMENTATION.
-  METHOD check_status_in_system.
-    DATA:
-      settings TYPE ctslg_settings,
-      cofiles  TYPE ctslg_cofile.
+class zcl_zabap_toc implementation.
+  method check_status_in_system.
+    data:
+      settings type ctslg_settings,
+      cofiles  type ctslg_cofile.
 
-    APPEND system TO settings-systems.
+    append system to settings-systems.
 
-    CALL FUNCTION 'TR_READ_GLOBAL_INFO_OF_REQUEST'
-      EXPORTING
+    call function 'TR_READ_GLOBAL_INFO_OF_REQUEST'
+      exporting
         iv_trkorr   = toc
         is_settings = settings
-      IMPORTING
+      importing
         es_cofile   = cofiles.
 
-    IF cofiles-exists = abap_false.
-      RAISE EXCEPTION TYPE zcx_zabap_exception EXPORTING message = CONV #( TEXT-e05 ) .
-    ENDIF.
+    if cofiles-exists = abap_false.
+      raise exception type zcx_zabap_exception exporting message = conv #( text-e05 ).
+    endif.
 
     imported = cofiles-imported.
     rc = cofiles-rc.
-  ENDMETHOD.
+  endmethod.
 
-  METHOD create.
-    TRY.
-        cl_adt_cts_management=>create_empty_request( EXPORTING iv_type = 'T' iv_text = CONV #( get_toc_description( source_transport ) )
-                                               iv_target = target_system IMPORTING es_request_header = DATA(transport_header) ).
+  method create.
+    try.
+        cl_adt_cts_management=>create_empty_request(
+          exporting iv_type = 'T' iv_text = conv #( get_toc_description( source_transport ) )
+                    iv_target = target_system importing es_request_header = data(transport_header) ).
         import_objects( source_transport = source_transport destination_transport = transport_header-trkorr ).
         toc = transport_header-trkorr.
 
-      CATCH cx_root INTO DATA(cx).
-        RAISE EXCEPTION TYPE zcx_zabap_exception EXPORTING message = replace( val = TEXT-e01 sub = '&1' with = cx->get_text( ) ).
-    ENDTRY.
-  ENDMETHOD.
+      catch cx_root into data(cx).
+        raise exception type zcx_zabap_exception
+          exporting message = replace( val = text-e01 sub = '&1' with = cx->get_text( ) ).
+    endtry.
+  endmethod.
 
-  METHOD import.
-    DATA error TYPE string.
+  method import.
+    data error type string.
 
-    CALL FUNCTION 'ZABAP_TOC_UNPACK' DESTINATION target_system
-      EXPORTING
+    call function 'ZABAP_TOC_UNPACK' destination target_system
+      exporting
         toc           = toc
         target_system = target_system
-      IMPORTING
+      importing
         ret_code      = ret_code
         error         = error.
 
-    IF strlen( error ) > 0.
-      RAISE EXCEPTION TYPE zcx_zabap_exception
-        EXPORTING
-          message = replace( val = TEXT-e03 sub = '&1' with = error ).
-    ENDIF.
-  ENDMETHOD.
+    if strlen( error ) > 0.
+      raise exception type zcx_zabap_exception
+        exporting
+          message = replace( val = text-e03 sub = '&1' with = error ).
+    endif.
+  endmethod.
 
-  METHOD import_objects.
-    DATA request_headers TYPE trwbo_request_headers.
-    DATA requests        TYPE trwbo_requests.
+  method import_objects.
+    data request_headers type trwbo_request_headers.
+    data requests        type trwbo_requests.
 
-    CALL FUNCTION 'TR_READ_REQUEST_WITH_TASKS'
-      EXPORTING
+    call function 'TR_READ_REQUEST_WITH_TASKS'
+      exporting
         iv_trkorr          = source_transport
-      IMPORTING
+      importing
         et_request_headers = request_headers
         et_requests        = requests
-      EXCEPTIONS
+      exceptions
         invalid_input      = 1
-        OTHERS             = 2.
-    IF sy-subrc <> 0.
-      RAISE EXCEPTION TYPE zcx_zabap_exception
-        EXPORTING
-          message = replace( val = replace( val = TEXT-e01 sub = '&1' with = |{ sy-subrc }| ) sub = '&2' with = 'TR_READ_REQUEST_WITH_TASKS' ).
-    ENDIF.
+        others             = 2.
+    if sy-subrc <> 0.
+      raise exception type zcx_zabap_exception
+        exporting
+          message = replace( val = replace( val = text-e01 sub = '&1' with = |{ sy-subrc }| )
+                             sub = '&2' with = 'TR_READ_REQUEST_WITH_TASKS' ).
+    endif.
 
-    LOOP AT request_headers REFERENCE INTO DATA(request_header) where trkorr = source_transport or strkorr = source_transport.
-      CALL FUNCTION 'TR_COPY_COMM'
-        EXPORTING
+    loop at request_headers reference into data(request_header)
+        where trkorr = source_transport or strkorr = source_transport.
+      call function 'TR_COPY_COMM'
+        exporting
           wi_dialog                = abap_false
           wi_trkorr_from           = request_header->trkorr
           wi_trkorr_to             = destination_transport
           wi_without_documentation = abap_false
-        EXCEPTIONS
+        exceptions
           db_access_error          = 1                " Database access error
           trkorr_from_not_exist    = 2                " first correction does not exist
           trkorr_to_is_repair      = 3                " Target correction is repair
@@ -109,27 +117,29 @@ CLASS zcl_zabap_toc IMPLEMENTATION.
           wrong_client             = 9                " Different clients (source - target)
           wrong_category           = 10               " Different category (source - target)
           object_not_patchable     = 11
-          OTHERS                   = 12.
-      IF sy-subrc <> 0.
-        RAISE EXCEPTION TYPE zcx_zabap_exception
-          EXPORTING
-            message = replace( val = replace( val = TEXT-e01 sub = '&1' with = |{ sy-subrc }| ) sub = '&2' with = 'TR_COPY_COMM' ).
-      ENDIF.
-    ENDLOOP.
-  ENDMETHOD.
+          others                   = 12.
+      if sy-subrc <> 0.
+        raise exception type zcx_zabap_exception
+          exporting
+            message = replace( val = replace( val = text-e01 sub = '&1' with = |{ sy-subrc }| )
+                               sub = '&2' with = 'TR_COPY_COMM' ).
+      endif.
+    endloop.
+  endmethod.
 
-  METHOD release.
-    TRY.
-        DATA(cts_api) = cl_cts_rest_api_factory=>create_instance( ).
+  method release.
+    try.
+        data(cts_api) = cl_cts_rest_api_factory=>create_instance( ).
         cts_api->release( iv_trkorr = toc iv_ignore_locks = abap_true ).
 
-      CATCH cx_root INTO DATA(cx).
-        RAISE EXCEPTION TYPE zcx_zabap_exception EXPORTING message = replace( val = TEXT-e02 sub = '&1' with = cx->get_text( ) ).
-    ENDTRY.
-  ENDMETHOD.
+      catch cx_root into data(cx).
+        raise exception type zcx_zabap_exception
+          exporting message = replace( val = text-e02 sub = '&1' with = cx->get_text( ) ).
+    endtry.
+  endmethod.
 
-  METHOD get_toc_description.
-    description = replace( val = TEXT-t01 sub = '&1' with = source_transport ).
-  ENDMETHOD.
+  method get_toc_description.
+    description = replace( val = text-t01 sub = '&1' with = source_transport ).
+  endmethod.
 
-ENDCLASS.
+endclass.

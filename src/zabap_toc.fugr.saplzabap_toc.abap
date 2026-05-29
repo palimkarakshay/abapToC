@@ -1,8 +1,8 @@
 *******************************************************************
 *   System-defined Include-files.                                 *
 *******************************************************************
-  INCLUDE LZABAP_TOCTOP.                     " Global Declarations
-  INCLUDE LZABAP_TOCUXX.                     " Function Modules
+  include lzabap_toctop.                     " Global Declarations
+  include lzabap_tocuxx.                     " Function Modules
 
 *******************************************************************
 *   User-defined Include-files (if necessary).                    *
