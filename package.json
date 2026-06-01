@@ -1,0 +1,21 @@
+{
+  "name": "abaptoc",
+  "version": "0.1.0",
+  "description": "ABAP transport-of-copies (ToC) packing/unpacking utility.",
+  "private": true,
+  "scripts": {
+    "lint": "abaplint",
+    "lint:fix": "abaplint --fix"
+  },
+  "devDependencies": {
+    "@abaplint/cli": "2.119.24"
+  },
+  "keywords": [
+    "abap",
+    "sap",
+    "abapgit",
+    "abaplint",
+    "transport-of-copies"
+  ],
+  "license": "MIT"
+}
