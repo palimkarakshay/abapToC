@@ -1,4 +1,4 @@
-CLASS zcx_zabap_exception DEFINITION INHERITING FROM cx_static_check PUBLIC.
+CLASS zcx_zaptoc_exception DEFINITION INHERITING FROM cx_static_check PUBLIC.
   PUBLIC SECTION.
     METHODS:
       constructor IMPORTING message TYPE string OPTIONAL,
@@ -9,7 +9,7 @@ CLASS zcx_zabap_exception DEFINITION INHERITING FROM cx_static_check PUBLIC.
 ENDCLASS.
 
 
-CLASS zcx_zabap_exception IMPLEMENTATION.
+CLASS zcx_zaptoc_exception IMPLEMENTATION.
   METHOD constructor ##ADT_SUPPRESS_GENERATION.
     super->constructor( ).
     me->message = message.

@@ -1,4 +1,4 @@
-class zcl_zabap_toc_report definition public final create public.
+class zcl_zaptoc_report definition public final create public.
 
   public section.
     types:
@@ -55,7 +55,7 @@ class zcl_zabap_toc_report definition public final create public.
     data:
       timer         type ref to cl_gui_timer,
       alv_table     type ref to cl_salv_table,
-      toc_manager   type ref to zcl_zabap_toc,
+      toc_manager   type ref to zcl_zaptoc,
       layout_key    type salv_s_layout_key,
       report_data   type tt_report,
       tocs_to_check type hashed table of trkorr with unique key table_line.
@@ -75,7 +75,7 @@ class zcl_zabap_toc_report definition public final create public.
 endclass.
 
 
-class zcl_zabap_toc_report implementation.
+class zcl_zaptoc_report implementation.
   method constructor.
     layout_key = value salv_s_layout_key( report = report_id ).
     toc_manager = new #( ).
@@ -146,7 +146,7 @@ class zcl_zabap_toc_report implementation.
           when others.
         endcase.
 
-      catch zcx_zabap_exception into data(exception).
+      catch zcx_zaptoc_exception into data(exception).
         selected->toc_status = exception->get_text( ).
         set_status_color( row = row color = c_status_color-red ).
 
@@ -266,7 +266,7 @@ class zcl_zabap_toc_report implementation.
             append value #( sign = 'I' option = 'EQ' low = toc->* ) to tocs_to_remove.
           endif.
 
-        catch zcx_zabap_exception into data(exception).
+        catch zcx_zaptoc_exception into data(exception).
           entry->toc_status = exception->get_text( ).
           set_entry_color( entry = entry color = c_status_color-red ).
 

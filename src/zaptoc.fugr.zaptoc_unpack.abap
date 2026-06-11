@@ -1,4 +1,4 @@
-function zabap_toc_unpack.
+function zaptoc_unpack.
 *"----------------------------------------------------------------------
 *"*"Lokalny interfejs:
 *"  IMPORTING

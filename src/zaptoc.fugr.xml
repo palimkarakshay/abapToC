@@ -3,12 +3,12 @@
  <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
   <asx:values>
    <INCLUDES>
-    <SOBJ_NAME>LZABAP_TOCTOP</SOBJ_NAME>
-    <SOBJ_NAME>SAPLZABAP_TOC</SOBJ_NAME>
+    <SOBJ_NAME>LZAPTOCTOP</SOBJ_NAME>
+    <SOBJ_NAME>SAPLZAPTOC</SOBJ_NAME>
    </INCLUDES>
    <FUNCTIONS>
     <item>
-     <FUNCNAME>ZABAP_TOC_UNPACK</FUNCNAME>
+     <FUNCNAME>ZAPTOC_UNPACK</FUNCNAME>
      <REMOTE_CALL>R</REMOTE_CALL>
      <SHORT_TEXT>Unpack ToC at target system</SHORT_TEXT>
      <IMPORT>

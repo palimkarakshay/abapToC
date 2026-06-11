@@ -1,4 +1,4 @@
-class zcl_zabap_toc definition
+class zcl_zaptoc definition
   public
   final
   create public.
@@ -6,14 +6,14 @@ class zcl_zabap_toc definition
   public section.
     methods:
       create importing source_transport type trkorr target_system type tr_target
-                returning value(toc) type trkorr raising zcx_zabap_exception,
-      release importing toc type trkorr raising zcx_zabap_exception,
+                returning value(toc) type trkorr raising zcx_zaptoc_exception,
+      release importing toc type trkorr raising zcx_zaptoc_exception,
       import importing toc type trkorr target_system type tr_target
-                returning value(ret_code) type trretcode raising zcx_zabap_exception,
+                returning value(ret_code) type trretcode raising zcx_zaptoc_exception,
       import_objects importing source_transport type trkorr destination_transport type trkorr
-                raising zcx_zabap_exception,
+                raising zcx_zaptoc_exception,
       check_status_in_system importing toc type trkorr system type tr_target
-                exporting imported type abap_bool rc type i raising zcx_zabap_exception.
+                exporting imported type abap_bool rc type i raising zcx_zaptoc_exception.
 
   private section.
     data c_transport_type_toc type trfunction value 'T'.
@@ -22,7 +22,7 @@ class zcl_zabap_toc definition
 endclass.
 
 
-class zcl_zabap_toc implementation.
+class zcl_zaptoc implementation.
   method check_status_in_system.
     data:
       settings type ctslg_settings,
@@ -38,7 +38,7 @@ class zcl_zabap_toc implementation.
         es_cofile   = cofiles.
 
     if cofiles-exists = abap_false.
-      raise exception type zcx_zabap_exception exporting message = conv #( text-e05 ).
+      raise exception type zcx_zaptoc_exception exporting message = conv #( text-e05 ).
     endif.
 
     imported = cofiles-imported.
@@ -54,7 +54,7 @@ class zcl_zabap_toc implementation.
         toc = transport_header-trkorr.
 
       catch cx_root into data(cx).
-        raise exception type zcx_zabap_exception
+        raise exception type zcx_zaptoc_exception
           exporting message = replace( val = text-e01 sub = '&1' with = cx->get_text( ) ).
     endtry.
   endmethod.
@@ -62,7 +62,7 @@ class zcl_zabap_toc implementation.
   method import.
     data error type string.
 
-    call function 'ZABAP_TOC_UNPACK' destination target_system
+    call function 'ZAPTOC_UNPACK' destination target_system
       exporting
         toc           = toc
         target_system = target_system
@@ -71,7 +71,7 @@ class zcl_zabap_toc implementation.
         error         = error.
 
     if strlen( error ) > 0.
-      raise exception type zcx_zabap_exception
+      raise exception type zcx_zaptoc_exception
         exporting
           message = replace( val = text-e03 sub = '&1' with = error ).
     endif.
@@ -91,7 +91,7 @@ class zcl_zabap_toc implementation.
         invalid_input      = 1
         others             = 2.
     if sy-subrc <> 0.
-      raise exception type zcx_zabap_exception
+      raise exception type zcx_zaptoc_exception
         exporting
           message = replace( val = replace( val = text-e01 sub = '&1' with = |{ sy-subrc }| )
                              sub = '&2' with = 'TR_READ_REQUEST_WITH_TASKS' ).
@@ -119,7 +119,7 @@ class zcl_zabap_toc implementation.
           object_not_patchable     = 11
           others                   = 12.
       if sy-subrc <> 0.
-        raise exception type zcx_zabap_exception
+        raise exception type zcx_zaptoc_exception
           exporting
             message = replace( val = replace( val = text-e01 sub = '&1' with = |{ sy-subrc }| )
                                sub = '&2' with = 'TR_COPY_COMM' ).
@@ -133,7 +133,7 @@ class zcl_zabap_toc implementation.
         cts_api->release( iv_trkorr = toc iv_ignore_locks = abap_true ).
 
       catch cx_root into data(cx).
-        raise exception type zcx_zabap_exception
+        raise exception type zcx_zaptoc_exception
           exporting message = replace( val = text-e02 sub = '&1' with = cx->get_text( ) ).
     endtry.
   endmethod.
