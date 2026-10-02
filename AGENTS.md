@@ -2,14 +2,14 @@
 
 ABAP Transport of Copies (ToC) utility. Ships a custom SAP transaction **ZAPTOC** for one-click
 create / release / import of Transport of Copies. Standalone **public MIT** kit (not in the
-`lumivara-abap` monorepo — intentionally separate per LUMIVARA.md).
+private ABAP monorepo — intentionally separate).
 
 
 **FORK LINEAGE (2026-06-11):** maintained fork of Kaszub09/abapToC (Marcin Kaszuba, MIT 2023) —
 shared git history. All artifacts renamed ZTOC→ZAPTOC / *zabap_toc*→*zaptoc* at larshp's request
 (dotabap/dotabap-list#270) so both install side-by-side; README credits the original up top.
 NEVER present this repo as original work on marketing surfaces — always "maintained fork".
-Product line: **Lumivara SAP** (Clean Core & ABAP modernization).
+Product line: **SAP** (Clean Core & ABAP modernization).
 
 ## Stack & layout
 - ABAP **7.50** source, packaged as an **abapGit** repo (`.abapgit.xml`, folder logic = PREFIX, master lang E).
@@ -43,4 +43,4 @@ SM59 RFC connections named per target `SYS` / `SYS.MANDANT`, optional SMT1 trust
 ## Gotchas
 - Edit ABAP in `src/` directly; keep abapGit `.xml` metadata in sync with each `.abap` object.
 - After any change, run `npm run lint` — it is the same check CI enforces.
-- Public OSS kit: keep it self-contained; do NOT fold into `lumivara-abap`.
+- Public OSS kit: keep it self-contained; do NOT fold into the private ABAP monorepo.
